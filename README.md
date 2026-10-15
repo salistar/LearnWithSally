@@ -43,6 +43,21 @@ Copy-Item .env.example .env      # puis remplis .env avec TES clés
 npx expo run:android             # build natif (Stream/WebRTC ne marche pas dans Expo Go)
 ```
 
+### Brancher tes comptes (Clerk, Stream, OpenAI, PostHog)
+
+```powershell
+./scripts/setup-env.ps1     # pose les questions et écrit .env (les secrets restent sur ton PC)
+npm run check:env           # vérifie chaque clé auprès de Clerk, Stream et OpenAI
+```
+
+`check:env` contrôle aussi que le type d'appel Stream `default` existe et que ton projet OpenAI a accès aux modèles Realtime.
+
+### MCP Clerk dans Claude Code
+
+Le fichier `.mcp.json` déclare le [serveur MCP officiel de Clerk](https://clerk.com/docs/guides/ai/mcp/clerk-mcp-server) (bêta).
+Ouvre Claude Code dans le dossier du projet, accepte le serveur `clerk`, tape `/mcp` puis connecte-toi à Clerk dans le navigateur.
+Alternative globale : `claude mcp add clerk --transport http https://mcp.clerk.com/mcp`.
+
 Dans un **second terminal**, lance Sally :
 
 ```powershell

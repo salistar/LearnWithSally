@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "check:env": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.2.0",
