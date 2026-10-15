@@ -1,0 +1,46 @@
+import { useSSO } from "@clerk/expo";
+import * as Linking from "expo-linking";
+import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useState } from "react";
+
+import { SocialProvider } from "@/components/SocialButton";
+import { track } from "@/lib/posthog";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const STRATEGY = {
+  google: "oauth_google",
+  facebook: "oauth_facebook",
+  apple: "oauth_apple",
+} as const;
+
+/** Google / Facebook / Apple sign-in via Clerk SSO. Providers must be enabled in the Clerk dashboard. */
+export function useSocialAuth(kind: "sign_in" | "sign_up") {
+  const { startSSOFlow } = useSSO();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function signInWith(provider: SocialProvider) {
+    setError("");
+    setLoading(true);
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: STRATEGY[provider],
+        redirectUrl: Linking.createURL("/"),
+      });
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+        track(kind === "sign_up" ? "sign_up_completed" : "sign_in_completed", { method: provider });
+        router.replace("/");
+      }
+    } catch (err) {
+      console.error("[auth] SSO failed", err);
+      setError(`Couldn't continue with ${provider}. Is it enabled in Clerk?`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { signInWith, error, loading };
+}
