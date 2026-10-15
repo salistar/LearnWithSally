@@ -32,12 +32,12 @@ app/            routes only (Expo Router)
   (auth)/       sign-up, sign-in
   (tabs)/       home, learn, ai-teacher, chat, profile (custom TabBar)
   lesson/[id]   audio lesson with Sally
-  api/          server routes: stream-token, agent-session (secrets live here)
+  api/          server routes: stream-token, agent-session, chat (secrets live here)
 components/     reusable UI (TabBar, LessonCard, VerificationModal, SocialButton, AuthShell, Logo)
 constants/      theme.ts (tokens for StyleSheet), images.ts (ALL image imports)
 data/           languages.ts, units.ts, lessons.ts — typed local content, no database
 lib/            posthog, api (URL helper), teacher (prompt builder), server-auth (API only), progress
-store/          zustand stores persisted with AsyncStorage
+store/          zustand stores (language + learning persisted with AsyncStorage, chat in memory only)
 types/          learning.ts
 vision-agent/   Python teacher service
 docs/           guide, prompts, mockups

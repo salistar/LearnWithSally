@@ -90,6 +90,14 @@ uv run main.py serve
 
 ---
 
+## 2 bis. Au-delà du tutoriel
+
+| Ajout | Fichiers | Validation |
+| --- | --- | --- |
+| Onglet Chat avec Sally | `app/(tabs)/chat.tsx`, `app/api/chat+api.ts`, `store/chatStore.ts` | sans session → 401 ; Sally répond et corrige ; la clé OpenAI n'est jamais dans l'app |
+| Build APK / déploiement API | `eas.json` | `eas build -p android --profile preview` produit un APK |
+| CI GitHub | `.github/workflows/ci.yml` | l'onglet *Actions* de GitHub est vert |
+
 ## 3. Différences avec le dépôt d'origine (corrections appliquées)
 
 Les écarts listés dans la section 6 du guide PDF ont été corrigés :

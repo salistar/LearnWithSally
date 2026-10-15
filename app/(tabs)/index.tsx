@@ -82,7 +82,9 @@ export default function Home() {
           </Text>
           <Image source={images.streakFire} style={{ width: 26, height: 26 }} contentFit="contain" />
           <Text className="h4 ml-1 mr-4">{streak}</Text>
-          <Ionicons name="notifications-outline" size={24} color={colors.ink} />
+          <TouchableOpacity onPress={() => router.push("/(tabs)/profile")} accessibilityLabel="Profile">
+            <Ionicons name="person-circle-outline" size={28} color={colors.ink} />
+          </TouchableOpacity>
         </View>
 
         {/* Daily goal */}

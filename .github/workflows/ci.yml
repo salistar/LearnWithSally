@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  app:
+    name: Lint, typecheck & bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Bundle Android JavaScript
+        run: npx expo export --platform android --output-dir dist-ci
+        env:
+          CI: "1"
+          EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuZXhhbXBsZS5jb20k
+
+  teacher:
+    name: Python teacher service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vision-agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Check the CLI loads
+        run: uv run main.py --help
+        env:
+          STREAM_API_KEY: ci
+          STREAM_API_SECRET: ci
+          OPENAI_API_KEY: ci

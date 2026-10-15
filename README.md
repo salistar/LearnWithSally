@@ -15,6 +15,7 @@
 - **Learn** : unités et leçons (30 leçons locales et typées), onglet Practice avec le vocabulaire.
 - **Leçon audio avec Sally** : appel audio Stream, la prof IA (Vision Agents + OpenAI Realtime) rejoint l'appel,
   micro « maintenir pour parler », **sous-titres en direct** de Sally et de l'élève, fin de leçon avec XP.
+- **Chat** : conversation écrite avec Sally (route serveur `/api/chat`, la clé OpenAI reste côté serveur).
 - **Analytics PostHog** : `language_selected`, `lesson_started`, `lesson_abandoned`, `lesson_completed`…
 
 ## Architecture
@@ -60,7 +61,8 @@ uv run main.py serve             # écoute sur http://localhost:8000
 | `STREAM_API_KEY` | serveur | identifiant public Stream |
 | `STREAM_API_SECRET` | serveur + Python | **secret**, jamais dans l'app |
 | `VISION_AGENT_URL` | serveur | URL du service Python vue par le serveur Expo |
-| `OPENAI_API_KEY` | Python | **secret**, utilisé seulement par Sally |
+| `OPENAI_API_KEY` | serveur + Python | **secret** : voix de Sally et onglet Chat |
+| `OPENAI_CHAT_MODEL` | serveur (option) | modèle du Chat (défaut `gpt-4o-mini`) |
 | `EXPO_PUBLIC_API_URL` | app (option) | URL publique du serveur API quand l'app ne tourne pas via Metro |
 
 ## Scripts
@@ -70,6 +72,24 @@ npm run lint        # ESLint (expo lint)
 npm run typecheck   # tsc --noEmit
 npm run android     # expo run:android
 ```
+
+## Installer l'app sur ton téléphone (APK)
+
+```powershell
+npm install -g eas-cli
+eas login
+eas init                              # lie le projet à ton compte Expo
+eas env:create                        # ajoute tes variables (Clerk, Stream, OpenAI…) côté EAS
+eas build -p android --profile preview   # produit un APK installable
+eas deploy --prod                     # publie les routes API (EAS Hosting)
+```
+
+Dans `eas.json`, remplace `https://learnwithsally.expo.app` par l'URL affichée par `eas deploy`.
+Le service Python de Sally doit être hébergé à part (VM, Render, Fly.io…) et `VISION_AGENT_URL` doit pointer vers lui.
+
+## Intégration continue
+
+`.github/workflows/ci.yml` lance à chaque push : lint, typecheck, bundle Android et vérification du service Python.
 
 ## Documentation
 
