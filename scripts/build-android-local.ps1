@@ -24,7 +24,7 @@ try {
     $env:JAVA_TOOL_OPTIONS = "$savedJavaOptions -Djava.io.tmpdir=$temporaryDirectory"
     $env:NODE_ENV = 'production'
     $env:LWS_ANDROID_BUILD_ROOT = Join-Path $temporaryDirectory 'cxx'
-    & "$projectDirectory/android/gradlew.bat" -p "$projectDirectory/android" -I "$PSScriptRoot/android-local.init.gradle" assembleRelease bundleRelease "-PreactNativeArchitectures=$Architectures" --max-workers=2 --console=plain
+    & "$projectDirectory/android/gradlew.bat" -p "$projectDirectory/android" -I "$PSScriptRoot/android-local.init.gradle" :app:assembleRelease :app:bundleRelease "-PreactNativeArchitectures=$Architectures" --max-workers=2 --console=plain
     if ($LASTEXITCODE) { throw 'Android build failed.' }
     New-Item -ItemType Directory -Force $OutputDirectory | Out-Null
     Copy-Item android/app/build/outputs/apk/release/app-release.apk (Join-Path $OutputDirectory 'LearnWithSally-local.apk')

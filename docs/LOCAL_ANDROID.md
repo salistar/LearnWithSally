@@ -42,7 +42,7 @@ $env:EXPO_PUBLIC_API_URL = 'http://127.0.0.1:8097'
 powershell -ExecutionPolicy RemoteSigned -File ./scripts/build-android-local.ps1 -Architectures arm64-v8a
 ```
 
-The script regenerates Android, uses a short temporary directory for Java/CMake, retains canonical source roots and runs `assembleRelease bundleRelease`.
+The script regenerates Android, uses a short temporary directory for Java/CMake, retains canonical source roots and runs `:app:assembleRelease :app:bundleRelease`.
 Default architectures are ARM64 and ARMv7. An ARM64-only build runs on compatible ARM64 devices.
 Artifacts go to `dist-android` by default; choose a destination with `-OutputDirectory`.
 
