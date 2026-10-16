@@ -1,0 +1,15 @@
+// Keep native object paths short without changing the canonical source roots.
+gradle.beforeProject { project ->
+    project.afterEvaluate {
+        def stagingRoot = System.getenv('LWS_ANDROID_BUILD_ROOT')
+        if (stagingRoot && project.plugins.hasPlugin('com.android.library')) {
+            project.android.externalNativeBuild.cmake.buildStagingDirectory = new File(stagingRoot, project.name)
+            project.android.defaultConfig.externalNativeBuild.cmake.arguments '-DCMAKE_OBJECT_PATH_MAX=240'
+        }
+        if (stagingRoot && project.plugins.hasPlugin('com.android.application')) {
+            project.android.externalNativeBuild.cmake.buildStagingDirectory = new File(stagingRoot, project.name)
+            project.android.defaultConfig.externalNativeBuild.cmake.arguments '-DCMAKE_OBJECT_PATH_MAX=240'
+        }
+    }
+}
+

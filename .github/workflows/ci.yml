@@ -18,6 +18,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm run test:dates
       - name: Bundle Android JavaScript
         run: npx expo export --platform android --output-dir dist-ci
         env:
@@ -40,3 +41,8 @@ jobs:
           STREAM_API_KEY: ci
           STREAM_API_SECRET: ci
           OPENAI_API_KEY: ci
+      - name: Check Stream edge initialization
+        run: uv run python -c "from vision_agents.plugins import getstream; getstream.Edge(); print('EDGE_INITIALIZED')"
+        env:
+          STREAM_API_KEY: ci
+          STREAM_API_SECRET: ci-only-not-a-real-secret-at-least-32-characters

@@ -10,4 +10,5 @@ dependencies = [
     "vision-agents-plugins-getstream==0.6.0",
     "vision-agents-plugins-openai==0.6.0",
     "python-dotenv>=1.0",
+    "getstream[telemetry,webrtc]==3.3.4",
 ]

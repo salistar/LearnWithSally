@@ -3,18 +3,17 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { LessonStatus } from "@/types/learning";
+import { localDate } from "@/lib/local-date";
 
 // All progress is LOCAL to the device and starts at zero — nothing here is
 // demo data pretending to be real progress.
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDate();
 }
 
 function yesterday(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return localDate(new Date(), -1);
 }
 
 interface LearningState {

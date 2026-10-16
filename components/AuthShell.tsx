@@ -13,7 +13,7 @@ export default function AuthShell({ title, subtitle, children }: { title: string
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 24, width: "100%", maxWidth: 560, alignSelf: "center" }} keyboardShouldPersistTaps="handled">
           <TouchableOpacity
             onPress={() => (router.canGoBack() ? router.back() : router.replace("/onboarding"))}
             className="mt-2 w-10 h-10 justify-center"

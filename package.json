@@ -11,7 +11,10 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "doctor": "expo-doctor",
-    "check:env": "node scripts/check-env.mjs"
+    "check:env": "node scripts/check-env.mjs",
+    "local:session": "node scripts/local-session.mjs",
+    "test:dates": "node --test scripts/local-date.test.mjs",
+    "test:services": "node scripts/smoke-services.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.2.0",

@@ -28,7 +28,7 @@ function LanguageRow({ language, selected, onPress }: { language: Language; sele
       </View>
       <View className="flex-1 ml-4">
         <Text className="h4">{language.name}</Text>
-        <Text className="body-sm">{language.learners} learners</Text>
+        <Text className="body-sm">{language.nativeName}</Text>
       </View>
       {selected ? (
         <View className="w-7 h-7 rounded-full bg-sally-purple items-center justify-center">
@@ -91,7 +91,7 @@ export default function LanguageSelect() {
                 style={{ flex: 1, marginLeft: 10, paddingVertical: 10, fontFamily: "Poppins-Regular", fontSize: 15, color: colors.ink }}
               />
             </View>
-            <Text className="h4 mt-5 mb-3">Popular</Text>
+            <Text className="h4 mt-5 mb-3">Languages</Text>
           </>
         }
         renderItem={({ item }) => (
