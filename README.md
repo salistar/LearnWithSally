@@ -63,7 +63,7 @@ Le lanceur démarre Metro sur `127.0.0.1:8097` et Sally sur `127.0.0.1:8000`. Il
 
 | Variable | Où | Rôle |
 | --- | --- | --- |
-| `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` | app | clé publique Clerk (`pk_test_…`) |
+| `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` | app | clé publique Clerk (`pk_test_…` en local, `pk_live_…` en production) |
 | `POSTHOG_PROJECT_TOKEN`, `POSTHOG_HOST` | app | projet PostHog (facultatif) |
 | `CLERK_SECRET_KEY` | serveur | vérification officielle des sessions dans `app/api/*` |
 | `STREAM_API_KEY` | serveur | identifiant public Stream |
@@ -81,19 +81,19 @@ npm run typecheck   # tsc --noEmit
 npm run android     # expo run:android
 ```
 
-## Installer l'app sur ton téléphone (APK)
+## Builds Android de production
 
 ```powershell
-npm install -g eas-cli
-eas login
-eas init                              # lie le projet à ton compte Expo
-eas env:create                        # ajoute tes variables (Clerk, Stream, OpenAI…) côté EAS
-eas build -p android --profile preview   # produit un APK installable
-eas deploy --prod                     # publie les routes API (EAS Hosting)
+npx eas-cli login
+npx eas-cli build -p android --profile production       # AAB signé
+npx eas-cli build -p android --profile production-apk   # APK signé
 ```
 
-Dans `eas.json`, remplace `https://learnwithsally.expo.app` par l'URL affichée par `eas deploy`.
-Le service Python de Sally doit être hébergé à part (VM, Render, Fly.io…) et `VISION_AGENT_URL` doit pointer vers lui.
+Le projet EAS dédié est `@salistar/learnwithsally`. Configurer d’abord `EXPO_PUBLIC_API_URL` (domaine HTTPS déployé) et `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` (instance de production) dans l’environnement EAS `production`. Les profils de production refusent les API locales et les clés Clerk de développement.
+
+Le `Dockerfile` et `render.yaml` préparent un hébergement commun de l’API et de Sally : seul Express est exposé ; Python reste sur `127.0.0.1:8000`. Les secrets serveur appartiennent au gestionnaire de secrets de l’hébergeur, jamais au bundle ou au dépôt. Ce déploiement payant doit être validé avant activation. L’image Docker complète reste à valider sur un moteur opérationnel.
+
+Pour vérifier la voix avec un élève synthétique, fournir les secrets dans l’environnement du processus, démarrer les services locaux, puis lancer `npm run test:voice`. Ce test utilise réellement les API payantes et crée puis supprime un utilisateur Clerk de test. Les fichiers audio et transcriptions synthétiques sont écrits dans `dist-android/voice-test` (ou `LWS_VOICE_OUTPUT`). Il ne remplace pas un essai manuel du microphone Android.
 
 ## Intégration continue
 

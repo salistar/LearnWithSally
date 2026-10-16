@@ -53,6 +53,23 @@ When the student speaks, react to what you really heard in one or two short sent
 Stay within the lesson vocabulary."""
 
 
+class CaptionedRealtime(openai.Realtime):
+    """Bridge VisionAgents 0.6 transcript output to its legacy event bus.
+
+    The pinned SDK sends transcripts to the inference output stream, while
+    the speech event classes remain defined but are no longer emitted there.
+    Preserve inference behavior and also publish the caption events we consume.
+    """
+
+    def _emit_agent_speech_transcription(self, text: str, *, mode):
+        super()._emit_agent_speech_transcription(text, mode=mode)
+        self.events.send(RealtimeAgentSpeechTranscriptionEvent(text=text, mode=mode))
+
+    def _emit_user_speech_transcription(self, text: str, *, mode):
+        super()._emit_user_speech_transcription(text, mode=mode)
+        self.events.send(RealtimeUserSpeechTranscriptionEvent(text=text, mode=mode))
+
+
 def require_env(*names: str) -> None:
     missing = [n for n in names if not os.getenv(n)]
     if missing:
@@ -62,7 +79,7 @@ def require_env(*names: str) -> None:
 async def create_agent(**kwargs) -> Agent:
     return Agent(
         edge=getstream.Edge(),
-        llm=openai.Realtime(
+        llm=CaptionedRealtime(
             realtime_session={
                 "type": "realtime",
                 "audio": {
@@ -102,6 +119,7 @@ async def join_call(agent: Agent, call_type: str, call_id: str, **kwargs) -> Non
     lesson_title = custom.get("lesson_title") or ""
     intro_message = custom.get("intro_message") or ""
     agent.instructions = Instructions(input_text=custom.get("system_prompt") or DEFAULT_INSTRUCTIONS)
+    agent.llm.set_instructions(agent.instructions)
     print(f"[sally] joining {call_id} — {language} / {lesson_title or 'no lesson title'}")
 
     # 2. Allow Sally to publish audio in the call.
@@ -120,7 +138,9 @@ async def join_call(agent: Agent, call_type: str, call_id: str, **kwargs) -> Non
         except Exception as exc:
             print(f"[sally] send_custom_event failed: {exc}")
 
-    async def on_transcript(event) -> None:
+    async def on_transcript(
+        event: RealtimeAgentSpeechTranscriptionEvent | RealtimeUserSpeechTranscriptionEvent,
+    ) -> None:
         if isinstance(event, RealtimeAgentSpeechTranscriptionEvent):
             speaker = "agent"
         elif isinstance(event, RealtimeUserSpeechTranscriptionEvent):

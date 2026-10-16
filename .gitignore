@@ -43,3 +43,5 @@ vision-agent/.env
 __pycache__/
 .tmp/
 dist-android/
+web/.next/
+web/next-env.d.ts
