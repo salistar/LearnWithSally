@@ -1,0 +1,38 @@
+name: learnwithsally
+services:
+  api:
+    image: learnwithsally-api:release
+    container_name: learnwithsally-api
+    restart: unless-stopped
+    mem_limit: 4g
+    cpus: 3
+    environment:
+      EXPO_PUBLIC_API_URL: https://learnwithsally.salistar.com
+      EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsubGVhcm53aXRoc2FsbHkuc2FsaXN0YXIuY29tJA
+      LWS_CREDENTIAL_FILE: /run/secrets/lws.json
+    volumes:
+      - /run/learnwithsally/secrets.json:/run/secrets/lws.json:ro
+    networks: [edge]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:10000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 180s
+      retries: 4
+  web:
+    image: learnwithsally-web:release
+    container_name: learnwithsally-web
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 2
+    environment:
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsubGVhcm53aXRoc2FsbHkuc2FsaXN0YXIuY29tJA
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+      LWS_CREDENTIAL_FILE: /run/secrets/lws.json
+    volumes:
+      - /run/learnwithsally/secrets.json:/run/secrets/lws.json:ro
+    networks: [edge]
+networks:
+  edge:
+    external: true

@@ -1,7 +1,9 @@
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 import productionConfig from '../scripts/production-config.cjs';
+import { loadCredentials } from './load-credentials.mjs';
 
+loadCredentials();
 productionConfig.assertProductionConfig();
 for (const name of ['CLERK_SECRET_KEY', 'STREAM_API_KEY', 'STREAM_API_SECRET', 'OPENAI_API_KEY']) {
   if (!process.env[name]) throw new Error(`Missing runtime variable: ${name}`);

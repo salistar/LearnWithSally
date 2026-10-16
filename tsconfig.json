@@ -14,5 +14,5 @@
     "nativewind-env.d.ts",
     "types/**/*.d.ts"
   ],
-  "exclude": ["node_modules", "vision-agent"]
+  "exclude": ["node_modules", "vision-agent", "web"]
 }

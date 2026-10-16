@@ -16,7 +16,7 @@ RUN npm ci --omit=dev
 
 FROM python:3.12-slim-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 libstdc++6 ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /usr/local/bin/uv
+RUN pip install --no-cache-dir uv==0.13.1
 COPY --from=web /usr/local/bin/node /usr/local/bin/node
 WORKDIR /app/vision-agent
 COPY vision-agent/pyproject.toml vision-agent/uv.lock ./

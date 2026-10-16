@@ -1,0 +1,8 @@
+{
+  "name": "learnwithsally-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "dev": "next dev -p 3100", "build": "next build", "start": "next start -p 3100", "typecheck": "tsc --noEmit" },
+  "dependencies": { "next": "16.4.2", "react": "19.3.1", "react-dom": "19.3.1", "@clerk/nextjs": "7.9.17", "@stream-io/video-client": "1.49.0", "lucide-react": "^0.468.0" },
+  "devDependencies": { "typescript": "~5.9.2", "@types/node": "^22.0.0", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0" }
+}
