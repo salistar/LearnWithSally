@@ -2,6 +2,8 @@ import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export type SocialProvider = "google" | "facebook" | "apple";
+// Only render providers configured for this Clerk instance.
+const enabledProviders = (process.env.EXPO_PUBLIC_SOCIAL_PROVIDERS ?? "google").split(",");
 
 const CONFIG: Record<SocialProvider, { label: string; icon: React.ReactNode }> = {
   google: { label: "Continue with Google", icon: <AntDesign name="google" size={22} color="#EA4335" /> },
@@ -18,6 +20,7 @@ export default function SocialButton({
   onPress: () => void;
   disabled?: boolean;
 }) {
+  if (!enabledProviders.includes(provider)) return null;
   const { label, icon } = CONFIG[provider];
   return (
     <TouchableOpacity

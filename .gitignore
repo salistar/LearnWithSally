@@ -41,3 +41,5 @@ yarn-error.*
 vision-agent/.venv/
 vision-agent/.env
 __pycache__/
+.tmp/
+dist-android/

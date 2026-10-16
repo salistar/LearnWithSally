@@ -1,8 +1,9 @@
-import { useSSO } from "@clerk/expo";
+import { useAuth, useSignIn, useSSO } from "@clerk/expo";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
+import { Platform } from "react-native";
 
 import { SocialProvider } from "@/components/SocialButton";
 import { track } from "@/lib/posthog";
@@ -18,6 +19,8 @@ const STRATEGY = {
 /** Google / Facebook / Apple sign-in via Clerk SSO. Providers must be enabled in the Clerk dashboard. */
 export function useSocialAuth(kind: "sign_in" | "sign_up") {
   const { startSSOFlow } = useSSO();
+  const { signIn } = useSignIn();
+  const { isLoaded } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -25,9 +28,19 @@ export function useSocialAuth(kind: "sign_in" | "sign_up") {
     setError("");
     setLoading(true);
     try {
+      if (!isLoaded) throw new Error("Sign-in is still loading. Please try again.");
+      if (Platform.OS === "web") {
+        const { error: ssoError } = await signIn.sso({
+          strategy: STRATEGY[provider],
+          redirectUrl: Linking.createURL("/"),
+          redirectCallbackUrl: Linking.createURL("/sso-callback"),
+        });
+        if (ssoError) throw new Error(ssoError.message);
+        return;
+      }
       const { createdSessionId, setActive } = await startSSOFlow({
         strategy: STRATEGY[provider],
-        redirectUrl: Linking.createURL("/"),
+        redirectUrl: "learnwithsally://sso-callback",
       });
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });

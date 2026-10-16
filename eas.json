@@ -12,11 +12,12 @@
     "preview": {
       "distribution": "internal",
       "android": { "buildType": "apk" },
-      "env": { "EXPO_PUBLIC_API_URL": "https://learnwithsally.expo.app" }
+      "environment": "preview"
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://learnwithsally.expo.app" }
+      "android": { "buildType": "app-bundle" },
+      "environment": "production"
     }
   },
   "submit": {

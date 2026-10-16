@@ -33,38 +33,31 @@
 
 ## Démarrage rapide (Windows + Android)
 
-Prérequis : Node.js LTS, Git, Android Studio (SDK + émulateur ou téléphone en débogage USB), Python ≥ 3.12, [uv](https://docs.astral.sh/uv/).
+Prérequis : Node.js 22.18+ ou 24, Git, Android SDK 36 + Java 17, téléphone USB, Python 3.12 et [uv](https://docs.astral.sh/uv/).
+Le [guide local Windows / APK / AAB](docs/LOCAL_ANDROID.md) décrit la session sans secrets sur disque, les tests réels et les limites de la signature de test.
 
 ```powershell
 git clone https://github.com/salistar/LearnWithSally.git
 cd LearnWithSally
 npm ci
-Copy-Item .env.example .env      # puis remplis .env avec TES clés
-npx expo run:android             # build natif (Stream/WebRTC ne marche pas dans Expo Go)
+Copy-Item .env.example .env      # renseigner seulement les valeurs publiques
+# Ajouter EXPO_PUBLIC_API_URL=http://127.0.0.1:8097 dans .env pour les tests USB.
+cd vision-agent
+python -m uv sync --locked --python 3.12
+cd ..
+npm run local:session
 ```
 
 ### Brancher tes comptes (Clerk, Stream, OpenAI, PostHog)
 
 ```powershell
-./scripts/setup-env.ps1     # pose les questions et écrit .env (les secrets restent sur ton PC)
-npm run check:env           # vérifie chaque clé auprès de Clerk, Stream et OpenAI
+# Ouvrir http://127.0.0.1:8791/ et charger les secrets dans les champs masqués.
+# Démarrer les services, puis cliquer sur « Vérifier les services ».
 ```
 
 `check:env` contrôle aussi que le type d'appel Stream `default` existe et que ton projet OpenAI a accès aux modèles Realtime.
 
-### MCP Clerk dans Claude Code
-
-Le fichier `.mcp.json` déclare le [serveur MCP officiel de Clerk](https://clerk.com/docs/guides/ai/mcp/clerk-mcp-server) (bêta).
-Ouvre Claude Code dans le dossier du projet, accepte le serveur `clerk`, tape `/mcp` puis connecte-toi à Clerk dans le navigateur.
-Alternative globale : `claude mcp add clerk --transport http https://mcp.clerk.com/mcp`.
-
-Dans un **second terminal**, lance Sally :
-
-```powershell
-cd vision-agent
-uv sync
-uv run main.py serve             # écoute sur http://localhost:8000
-```
+Le lanceur démarre Metro sur `127.0.0.1:8097` et Sally sur `127.0.0.1:8000`. Il transmet les secrets uniquement en mémoire aux processus enfants.
 
 ### Variables d'environnement
 

@@ -5,7 +5,6 @@ export interface Language {
   name: string;
   nativeName: string;
   flag: string; // emoji flag, no network needed
-  learners: string;
   /** How Sally greets in this language (used on Home). */
   hello: string;
 }

@@ -7,17 +7,16 @@ const ok = (m) => console.log(`  \x1b[32m✔\x1b[0m ${m}`);
 const ko = (m) => console.log(`  \x1b[31m✖\x1b[0m ${m}`);
 const warn = (m) => console.log(`  \x1b[33m!\x1b[0m ${m}`);
 
-if (!existsSync(".env")) {
-  ko(".env not found — run ./scripts/setup-env.ps1 (or copy .env.example to .env)");
-  process.exit(1);
-}
 const env = Object.fromEntries(
-  readFileSync(".env", "utf8")
+  (existsSync(".env") ? readFileSync(".env", "utf8") : "")
     .split(/\r?\n/)
     .map((l) => l.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/))
     .filter(Boolean)
     .map((m) => [m[1], m[2].replace(/^["']|["']$/g, "")]),
 );
+// A process-only session or CI may supply secrets without an environment file.
+Object.assign(env, process.env);
+const timedFetch = (url, init = {}) => fetch(url, { ...init, signal: AbortSignal.timeout(15_000) });
 
 let failures = 0;
 const fail = (m) => {
@@ -41,11 +40,11 @@ await check("Clerk", async () => {
   ok("publishable key format");
   if (!/^sk_(test|live)_/.test(sk)) return fail("CLERK_SECRET_KEY must start with sk_test_ or sk_live_");
   if (pk.split("_")[1] !== sk.split("_")[1]) warn("publishable and secret keys are from different environments (test/live)");
-  const res = await fetch("https://api.clerk.com/v1/jwks", { headers: { Authorization: `Bearer ${sk}` } });
+  const res = await timedFetch("https://api.clerk.com/v1/jwks", { headers: { Authorization: `Bearer ${sk}` } });
   if (!res.ok) return fail(`secret key rejected by Clerk (HTTP ${res.status})`);
   ok("secret key accepted by Clerk API");
   const frontendApi = Buffer.from(pk.split("_")[2] ?? "", "base64").toString().replace(/\$$/, "");
-  const env2 = await fetch(`https://${frontendApi}/v1/environment`).catch(() => null);
+  const env2 = await timedFetch(`https://${frontendApi}/v1/environment`).catch(() => null);
   if (env2?.ok) ok(`publishable key points to ${frontendApi}`);
   else warn("could not reach the Clerk frontend API from this machine");
 });
@@ -60,7 +59,7 @@ await check("Stream", async () => {
   const now = Math.floor(Date.now() / 1000);
   const unsigned = `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ server: true, iat: now - 30, exp: now + 300 })}`;
   const token = `${unsigned}.${createHmac("sha256", secret).update(unsigned).digest("base64url")}`;
-  const res = await fetch(`https://video.stream-io-api.com/api/v2/video/calltypes?api_key=${encodeURIComponent(key)}`, {
+  const res = await timedFetch(`https://video.stream-io-api.com/api/v2/video/calltypes?api_key=${encodeURIComponent(key)}`, {
     headers: { Authorization: token, "stream-auth-type": "jwt" },
   });
   if (!res.ok) return fail(`Stream rejected the key/secret (HTTP ${res.status})`);
@@ -73,7 +72,7 @@ await check("Stream", async () => {
 await check("OpenAI", async () => {
   const key = env.OPENAI_API_KEY ?? "";
   if (!key.startsWith("sk-")) return fail("OPENAI_API_KEY must start with sk-");
-  const res = await fetch("https://api.openai.com/v1/models", { headers: { Authorization: `Bearer ${key}` } });
+  const res = await timedFetch("https://api.openai.com/v1/models", { headers: { Authorization: `Bearer ${key}` } });
   if (!res.ok) return fail(`key rejected by OpenAI (HTTP ${res.status})`);
   const ids = ((await res.json()).data ?? []).map((m) => m.id);
   ok("key accepted by OpenAI");
