@@ -25,9 +25,16 @@ export async function apiFetch(
   const headers = new Headers(init.headers);
   if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
   headers.set("Authorization", `Bearer ${token}`);
-  return fetch(apiUrl(path), {
-    ...init,
-    headers,
-    signal: init.signal ?? AbortSignal.timeout(30_000),
-  });
+  // React Native 0.81's AbortSignal polyfill has no static timeout() method.
+  const controller = new AbortController();
+  const timeout = init.signal ? undefined : setTimeout(() => controller.abort(), 30_000);
+  try {
+    return await fetch(apiUrl(path), {
+      ...init,
+      headers,
+      signal: init.signal ?? controller.signal,
+    });
+  } finally {
+    if (timeout !== undefined) clearTimeout(timeout);
+  }
 }
