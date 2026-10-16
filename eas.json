@@ -18,6 +18,10 @@
       "autoIncrement": true,
       "android": { "buildType": "app-bundle" },
       "environment": "production"
+    },
+    "production-apk": {
+      "extends": "production",
+      "android": { "buildType": "apk" }
     }
   },
   "submit": {

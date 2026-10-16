@@ -1,0 +1,22 @@
+# Proposal only: creating this service incurs hosting costs. Confirm before deploy.
+services:
+  - type: web
+    name: learnwithsally
+    runtime: docker
+    plan: standard
+    region: frankfurt
+    healthCheckPath: /healthz
+    autoDeployTrigger: off
+    envVars:
+      - key: EXPO_PUBLIC_API_URL
+        sync: false
+      - key: EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: STREAM_API_KEY
+        sync: false
+      - key: STREAM_API_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

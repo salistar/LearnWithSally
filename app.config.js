@@ -1,9 +1,16 @@
 // Expo configuration. Only PUBLIC values go into `extra` — never put
 // STREAM_API_SECRET, CLERK_SECRET_KEY or OPENAI_API_KEY here.
+import productionConfig from './scripts/production-config.cjs';
+
+if (process.env.EAS_BUILD_PROFILE?.startsWith('production') || process.env.LWS_PRODUCTION_BUILD === '1') {
+  productionConfig.assertProductionConfig();
+}
+
 export default {
   expo: {
     name: "LearnWithSally",
     slug: "learnwithsally",
+    owner: "salistar",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
@@ -69,6 +76,7 @@ export default {
       reactCompiler: true,
     },
     extra: {
+      eas: { projectId: "baf87239-db4e-4bb2-9503-4b457c46d77d" },
       posthogProjectToken: process.env.POSTHOG_PROJECT_TOKEN,
       posthogHost: process.env.POSTHOG_HOST,
     },

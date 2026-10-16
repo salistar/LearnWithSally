@@ -1,0 +1,9 @@
+{
+  "name": "learnwithsally-server-runtime",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "expo-server": "1.0.7",
+    "express": "5.3.0"
+  }
+}
